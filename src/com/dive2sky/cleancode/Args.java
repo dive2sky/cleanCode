@@ -1,5 +1,7 @@
 package com.dive2sky.cleancode;
 
+import com.sun.javafx.tools.ant.Application;
+
 import java.text.ParseException;
 import java.util.*;
 
@@ -9,7 +11,7 @@ public class Args {
     private String[] args;
     private boolean valid = true;
     private Set<Character> unexpectedArguments = new TreeSet<Character>();
-    private Map<Character, Boolean> booleanArgs = new HashMap<Character, Boolean>();
+    private Map<Character, ArgumentMarshaller> booleanArgs = new HashMap<Character, ArgumentMarshaller>();
     private Map<Character, String> stringArgs = new HashMap<Character, String>();
     private Map<Character, Integer> intArgs = new HashMap<Character, Integer>();
     private Set<Character> argsFound = new HashSet<Character>();
@@ -78,7 +80,7 @@ public class Args {
     }
 
     private void parseBooleanSchemaElement(char elementId) {
-        booleanArgs.put(elementId, false);
+        booleanArgs.put(elementId, new BooleanArgumentMarshaller());
     }
 
     private void parseIntegerSchemaElement(char elementId) {
@@ -183,7 +185,7 @@ public class Args {
     }
 
     private void setBooleanArg(char argChar, boolean value) {
-        booleanArgs.put(argChar, value);
+        booleanArgs.get(argChar).setBooleanArg(value);
     }
 
     private boolean isBooleaArg(char argChar) {
@@ -251,7 +253,8 @@ public class Args {
     }
 
     public boolean getBoolean(char arg) {
-        return falseIfNull(booleanArgs.get(arg));
+        ArgumentMarshaller am = booleanArgs.get(arg);
+        return am != null && am.getBoolean();
     }
 
     public boolean has(char arg) {
