@@ -11,9 +11,10 @@ public class Args {
     private String[] args;
     private boolean valid = true;
     private Set<Character> unexpectedArguments = new TreeSet<Character>();
-    private Map<Character, ArgumentMarshaller> booleanArgs = new HashMap<Character, ArgumentMarshaller>();
-    private Map<Character, ArgumentMarshaller> stringArgs = new HashMap<Character, ArgumentMarshaller>();
-    private Map<Character, ArgumentMarshaller> intArgs = new HashMap<Character, ArgumentMarshaller>();
+    //private Map<Character, ArgumentMarshaller> booleanArgs = new HashMap<Character, ArgumentMarshaller>();
+    //private Map<Character, ArgumentMarshaller> stringArgs = new HashMap<Character, ArgumentMarshaller>();
+    //private Map<Character, ArgumentMarshaller> intArgs = new HashMap<Character, ArgumentMarshaller>();
+    private Map<Character, ArgumentMarshaller> marshallers = new HashMap<Character, ArgumentMarshaller>();
     private Set<Character> argsFound = new HashSet<Character>();
     private int currentArgument;
     private char errorArgumentId = '\0';
@@ -80,15 +81,15 @@ public class Args {
     }
 
     private void parseBooleanSchemaElement(char elementId) {
-        booleanArgs.put(elementId, new BooleanArgumentMarshaller());
+        marshallers.put(elementId, new BooleanArgumentMarshaller());
     }
 
     private void parseIntegerSchemaElement(char elementId) {
-        intArgs.put(elementId, new IntegerArgumentMarshaller());
+        marshallers.put(elementId, new IntegerArgumentMarshaller());
     }
 
     private void parseStringSchemaElement(char elementId) {
-        stringArgs.put(elementId, new StringArgumentMarshaller());
+        marshallers.put(elementId, new StringArgumentMarshaller());
     }
 
     private boolean isStringSchemaElement(String elementTail) {
@@ -146,15 +147,18 @@ public class Args {
     }
 
     private boolean isIntArg(char argChar) {
-        return intArgs.containsKey(argChar);
+        ArgumentMarshaller am = marshallers.get(argChar);
+        return am instanceof BooleanArgumentMarshaller;
     }
 
     private void setIntArg(char argChar) throws ArgsException {
+        ArgumentMarshaller am = marshallers.get(argChar);
+
         currentArgument++;
         String parameter = null;
         try {
             parameter = args[currentArgument];
-            intArgs.get(argChar).set(parameter);
+            am.set(parameter);
         } catch (ArrayIndexOutOfBoundsException e) {
             valid = false;
             errorArgumentId = argChar;
@@ -169,9 +173,10 @@ public class Args {
     }
 
     private void setStringArg(char argChar) throws ArgsException {
+        ArgumentMarshaller am = marshallers.get(argChar);
         currentArgument++;
         try {
-            stringArgs.get(argChar).set(args[currentArgument]);
+            am.set(args[currentArgument]);
         } catch (ArrayIndexOutOfBoundsException e) {
             valid = false;
             errorArgumentId = argChar;
@@ -181,15 +186,18 @@ public class Args {
     }
 
     private boolean isStringArg(char argChar) {
-        return stringArgs.containsKey(argChar);
+        ArgumentMarshaller am = marshallers.get(argChar);
+        return am instanceof StringArgumentMarshaller;
     }
 
     private void setBooleanArg(char argChar, boolean value) throws ArgsException {
-        booleanArgs.get(argChar).set("true");
+        ArgumentMarshaller am = marshallers.get(argChar);
+        am.set("true");
     }
 
     private boolean isBooleaArg(char argChar) {
-        return booleanArgs.containsKey(argChar);
+        ArgumentMarshaller am = marshallers.get(argChar);
+        return am instanceof BooleanArgumentMarshaller;
     }
 
     public int cardinality() {
@@ -233,17 +241,17 @@ public class Args {
     }
 
     public String getString(char arg) {
-        ArgumentMarshaller am = stringArgs.get(arg);
+        ArgumentMarshaller am = marshallers.get(arg);
         return am == null ? "" : (String)am.get();
     }
 
     public int getInt(char arg) {
-        ArgumentMarshaller am = intArgs.get(arg);
+        ArgumentMarshaller am = marshallers.get(arg);
         return am == null ? 0 : (int)am.get();
     }
 
     public boolean getBoolean(char arg) {
-        ArgumentMarshaller am = booleanArgs.get(arg);
+        ArgumentMarshaller am = marshallers.get(arg);
         return am != null && (boolean)am.get();
     }
 
