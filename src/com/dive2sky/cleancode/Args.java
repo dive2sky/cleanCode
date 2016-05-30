@@ -136,7 +136,7 @@ public class Args {
                 setBooleanArg(am);
             else if (am instanceof StringArgumentMarshaller)
                 setStringArg(am);
-            else if (am instanceof BooleanArgumentMarshaller)
+            else if (am instanceof IntegerArgumentMarshaller)
                 setIntArg(am);
             else
                 return false;
