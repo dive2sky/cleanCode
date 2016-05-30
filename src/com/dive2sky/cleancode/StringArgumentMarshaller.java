@@ -1,6 +1,16 @@
 package com.dive2sky.cleancode;
 
-import com.sun.jdi.connect.Connector;
-
 public class StringArgumentMarshaller extends ArgumentMarshaller {
+
+    private String stringValue = "";
+
+    @Override
+    public void set(String value) {
+        stringValue = value;
+    }
+
+    @Override
+    public Object get() {
+        return stringValue;
+    }
 }

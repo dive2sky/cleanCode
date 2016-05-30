@@ -1,4 +1,4 @@
 package com.dive2sky.cleancode;
 
-public class ArgsException {
+public class ArgsException extends Exception {
 }

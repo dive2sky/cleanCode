@@ -1,14 +1,9 @@
 package com.dive2sky.cleancode;
 
-public class ArgumentMarshaller {
+public abstract class ArgumentMarshaller {
 
-    private boolean booleanValue;
+    public abstract void set(String value) throws ArgsException;
 
-    public void setBooleanArg(boolean value) {
-        booleanValue = value;
-    }
+    public abstract Object get();
 
-    public boolean getBoolean() {
-        return booleanValue;
-    }
 }
