@@ -119,4 +119,24 @@ public class ArgsTest  {
         assertTrue(args.has('y'));
     }
 
+    @Test
+    public void testSimpleIntPresent() throws Exception {
+        Args args = new Args("x#", new String[]{"-x", "42"});
+        assertEquals(1, args.cardinality());
+        assertTrue(args.has('x'));
+        assertEquals(42, args.getInt('x'));
+    }
+
+    @Test
+    public void testUnknownIntIsZero() throws Exception {
+        Args args = new Args("", new String[0]);
+        assertEquals(0, args.getInt('x'));
+    }
+
+    @Test
+    public void testUnsetIntIsZero() throws Exception {
+        Args args = new Args("x#", new String[0]);
+        assertEquals(0, args.getInt('x'));
+    }
+
 }
