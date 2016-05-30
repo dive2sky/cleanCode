@@ -1,9 +1,8 @@
 package com.dive2sky.cleancode;
 
-public abstract class ArgumentMarshaller {
+import java.util.Iterator;
 
-    public abstract void set(String value) throws ArgsException;
-
-    public abstract Object get();
-
+public interface ArgumentMarshaller {
+    void set(Iterator<String> currentArgument) throws ArgsException;
+    Object get();
 }

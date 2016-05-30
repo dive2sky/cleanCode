@@ -1,10 +1,12 @@
 package com.dive2sky.cleancode;
 
-public class BooleanArgumentMarshaller extends ArgumentMarshaller {
+import java.util.Iterator;
+
+public class BooleanArgumentMarshaller implements ArgumentMarshaller {
     private boolean booleanValue;
 
     @Override
-    public void set(String value) {
+    public void set(Iterator<String> currentArgument) throws ArgsException {
         booleanValue = true;
     }
 
