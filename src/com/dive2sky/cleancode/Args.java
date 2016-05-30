@@ -56,11 +56,11 @@ public class Args {
         String elementTail = element.substring(1);
         validateSchemaElementId(elementId);
         if(isBooleanSchemaElement(elementTail))
-            parseBooleanSchemaElement(elementId);
+            marshallers.put(elementId, new BooleanArgumentMarshaller());
         else if (isStringSchemaElement(elementTail))
-            parseStringSchemaElement(elementId);
+            marshallers.put(elementId, new StringArgumentMarshaller());
         else if (isIntegerSchemaElement(elementTail))
-            parseIntegerSchemaElement(elementId);
+            marshallers.put(elementId, new IntegerArgumentMarshaller());
         else {
             throw new ParseException(
                     String.format("Argument: %c has invalid format : %s.",
@@ -73,18 +73,6 @@ public class Args {
             throw new ParseException(
                     "Bad character:" + elementId + "in Args format: "+ schema, 0);
         }
-    }
-
-    private void parseBooleanSchemaElement(char elementId) {
-        marshallers.put(elementId, new BooleanArgumentMarshaller());
-    }
-
-    private void parseIntegerSchemaElement(char elementId) {
-        marshallers.put(elementId, new IntegerArgumentMarshaller());
-    }
-
-    private void parseStringSchemaElement(char elementId) {
-        marshallers.put(elementId, new StringArgumentMarshaller());
     }
 
     private boolean isStringSchemaElement(String elementTail) {
