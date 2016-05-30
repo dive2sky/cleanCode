@@ -1,6 +1,7 @@
 package com.dive2sky.cleancode;
 
 import com.sun.javafx.tools.ant.Application;
+import com.sun.org.apache.xpath.internal.Arg;
 
 import java.text.ParseException;
 import java.util.*;
@@ -11,9 +12,6 @@ public class Args {
     private String[] args;
     private boolean valid = true;
     private Set<Character> unexpectedArguments = new TreeSet<Character>();
-    //private Map<Character, ArgumentMarshaller> booleanArgs = new HashMap<Character, ArgumentMarshaller>();
-    //private Map<Character, ArgumentMarshaller> stringArgs = new HashMap<Character, ArgumentMarshaller>();
-    //private Map<Character, ArgumentMarshaller> intArgs = new HashMap<Character, ArgumentMarshaller>();
     private Map<Character, ArgumentMarshaller> marshallers = new HashMap<Character, ArgumentMarshaller>();
     private Set<Character> argsFound = new HashSet<Character>();
     private int currentArgument;
@@ -134,25 +132,31 @@ public class Args {
     }
 
     private boolean setArgument(char argChar) throws ArgsException {
-        if (isBooleaArg(argChar))
-            setBooleanArg(argChar, true);
-        else if (isStringArg(argChar))
-            setStringArg(argChar);
-        else if (isIntArg(argChar))
-            setIntArg(argChar);
-        else
-            return false;
+        ArgumentMarshaller am = marshallers.get(argChar);
+
+        try {
+            if (isBooleaArg(am))
+                setBooleanArg(am);
+            else if (isStringArg(am))
+                setStringArg(am);
+            else if (isIntArg(am))
+                setIntArg(am);
+            else
+                return false;
+        } catch (ArgsException e) {
+            valid = false;
+            errorArgumentId = argChar;
+            throw e;
+        }
 
         return true;
     }
 
-    private boolean isIntArg(char argChar) {
-        ArgumentMarshaller am = marshallers.get(argChar);
+    private boolean isIntArg(ArgumentMarshaller am) {
         return am instanceof BooleanArgumentMarshaller;
     }
 
-    private void setIntArg(char argChar) throws ArgsException {
-        ArgumentMarshaller am = marshallers.get(argChar);
+    private void setIntArg(ArgumentMarshaller am) throws ArgsException {
 
         currentArgument++;
         String parameter = null;
@@ -160,43 +164,34 @@ public class Args {
             parameter = args[currentArgument];
             am.set(parameter);
         } catch (ArrayIndexOutOfBoundsException e) {
-            valid = false;
-            errorArgumentId = argChar;
             errorCode = ErrorCode.MISSING_INTEGER;
             throw new ArgsException();
         } catch (ArgsException e) {
-            valid = false;
-            errorArgumentId = argChar;
             errorCode = ErrorCode.INVALID_INTEGER;
+            errorParameter = parameter;
             throw e;
         }
     }
 
-    private void setStringArg(char argChar) throws ArgsException {
-        ArgumentMarshaller am = marshallers.get(argChar);
+    private void setStringArg(ArgumentMarshaller am) throws ArgsException {
         currentArgument++;
         try {
             am.set(args[currentArgument]);
         } catch (ArrayIndexOutOfBoundsException e) {
-            valid = false;
-            errorArgumentId = argChar;
             errorCode = ErrorCode.MISSING_STRING;
             throw new ArgsException();
         }
     }
 
-    private boolean isStringArg(char argChar) {
-        ArgumentMarshaller am = marshallers.get(argChar);
+    private boolean isStringArg(ArgumentMarshaller am) {
         return am instanceof StringArgumentMarshaller;
     }
 
-    private void setBooleanArg(char argChar, boolean value) throws ArgsException {
-        ArgumentMarshaller am = marshallers.get(argChar);
+    private void setBooleanArg(ArgumentMarshaller am) throws ArgsException {
         am.set("true");
     }
 
-    private boolean isBooleaArg(char argChar) {
-        ArgumentMarshaller am = marshallers.get(argChar);
+    private boolean isBooleaArg(ArgumentMarshaller am) {
         return am instanceof BooleanArgumentMarshaller;
     }
 
