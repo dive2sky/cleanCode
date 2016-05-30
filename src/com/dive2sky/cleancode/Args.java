@@ -1,8 +1,5 @@
 package com.dive2sky.cleancode;
 
-import com.sun.javafx.tools.ant.Application;
-import com.sun.org.apache.xpath.internal.Arg;
-
 import java.text.ParseException;
 import java.util.*;
 
@@ -135,11 +132,11 @@ public class Args {
         ArgumentMarshaller am = marshallers.get(argChar);
 
         try {
-            if (isBooleaArg(am))
+            if (am instanceof BooleanArgumentMarshaller)
                 setBooleanArg(am);
-            else if (isStringArg(am))
+            else if (am instanceof StringArgumentMarshaller)
                 setStringArg(am);
-            else if (isIntArg(am))
+            else if (am instanceof BooleanArgumentMarshaller)
                 setIntArg(am);
             else
                 return false;
@@ -152,12 +149,7 @@ public class Args {
         return true;
     }
 
-    private boolean isIntArg(ArgumentMarshaller am) {
-        return am instanceof BooleanArgumentMarshaller;
-    }
-
     private void setIntArg(ArgumentMarshaller am) throws ArgsException {
-
         currentArgument++;
         String parameter = null;
         try {
@@ -183,16 +175,8 @@ public class Args {
         }
     }
 
-    private boolean isStringArg(ArgumentMarshaller am) {
-        return am instanceof StringArgumentMarshaller;
-    }
-
     private void setBooleanArg(ArgumentMarshaller am) throws ArgsException {
         am.set("true");
-    }
-
-    private boolean isBooleaArg(ArgumentMarshaller am) {
-        return am instanceof BooleanArgumentMarshaller;
     }
 
     public int cardinality() {
